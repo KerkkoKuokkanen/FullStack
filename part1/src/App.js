@@ -3,28 +3,28 @@ const Header = (header) => {
 }
 
 const Part = (part) => {
-  const {part1, exercises} = part
   return (
+    // way to use parameters as shown in the course example
     <p>
-      {part1} {exercises}
+      {part.par} {part.exercises}
     </p>
   )
 }
 
 const Content = (content) => {
-  const {part1, exercises1, part2, exercises2, part3, exercises3} = content
+  const {part1, exercises1, part2, exercises2, part3, exercises3} = content // I found using chat-gpt this way to use parameters, so I wanted to try it
   return (
     <div>
       <Part 
-        part1={part1}
+        par={part1}
         exercises={exercises1}
       />
       <Part 
-        part1={part2}
+        par={part2}
         exercises={exercises2}
       />
       <Part 
-        part1={part3}
+        par={part3}
         exercises={exercises3}
       />
     </div>
