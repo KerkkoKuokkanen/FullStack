@@ -4,6 +4,8 @@ const Button = ({click, text}) => (
   <button onClick={click}>{text}</button>
 )
 
+
+//function for getting random number between 0 and 7. Does not return the already given number "selected"
 const GetRandomNum = (selcted) => {
   let ret = Math.floor(Math.random() * 8)
   while (ret === selcted)
