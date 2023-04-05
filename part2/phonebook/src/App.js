@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './index.css'
 
 const Persons = ({addName, handleNames, handleNumbers, newName, newNumber}) => (
   <form onSubmit={addName}>
@@ -54,11 +55,27 @@ const Filter = ({filter, handleFilter}) => (
   </div>
 )
 
+const Notification = ({message}) => {
+  if (message == null) return null
+
+  if (message.includes('has already been removed from the server'))
+  {
+    return (
+      <div className='error'>{message}</div>
+    )
+  }
+
+  return (
+    <div className='message'>{message}</div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -72,11 +89,16 @@ const App = () => {
     {
       if (window.confirm(newName + ' is already in the phonebook. Do you want to replace the old one?'))
       {
-        const replaced = persons.find(person => person.name === newName)
+        const replaced = persons.find(person => JSON.stringify(person.name) === JSON.stringify(newName))
         personService.update(replaced.id, {...replaced, number: newNumber})
         .then(responce => setPersons(  
           persons.map(person => person.id !== responce.data.id ? person : responce.data)
-        ))
+        )).catch(error => {
+          setMessage(`Information of ${newName} has already been removed from the server.`)
+          setTimeout(() => {setMessage(null)}, 5000)
+        })
+        setMessage('Changed ' + newName)
+        setTimeout(() => {setMessage(null)}, 5000)
         setNewName('')
         setNewNumber('')
       }
@@ -84,6 +106,8 @@ const App = () => {
     }
     personService.create({name: newName, number: newNumber})
     .then(response => {setPersons(persons.concat(response.data))})
+    setMessage('Added ' + newName)
+    setTimeout(() => {setMessage(null)}, 5000)
     setNewName('')
     setNewNumber('')
   }
@@ -100,12 +124,13 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filter={filter} handleFilter={handleFilter} />
       <h3>add a new</h3>
       <Persons addName={addName} handleNames={handleNames} handleNumbers={handleNumbers}
         newName={newName} newNumber={newNumber} />
       <h3>Numbers</h3>
-      <RenderPeople people={searchFilter()} persons={persons} setPersons={setPersons}/>
+      <RenderPeople people={searchFilter()} persons={persons} setPersons={setPersons} />
     </div>
   )
 }
