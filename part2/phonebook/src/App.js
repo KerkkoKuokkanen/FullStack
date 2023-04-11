@@ -58,7 +58,8 @@ const Filter = ({filter, handleFilter}) => (
 const Notification = ({message}) => {
   if (message == null) return null
 
-  if (message.includes('has already been removed from the server'))
+  if (message.includes('has already been removed from the server')
+      || message.includes('Person validation failed'))
   {
     return (
       <div className='error'>{message}</div>
@@ -105,8 +106,14 @@ const App = () => {
       return
     }
     personService.create({name: newName, number: newNumber})
-    .then(response => {setPersons(persons.concat(response.data))})
-    setMessage('Added ' + newName)
+    .then(response => {
+      setPersons(persons.concat(response.data))
+      setMessage('Added ' + newName)
+    })
+    .catch(error => {
+      setMessage(error.response.data.error)
+      console.log(error.response.data.error)
+    })
     setTimeout(() => {setMessage(null)}, 5000)
     setNewName('')
     setNewNumber('')
