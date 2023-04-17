@@ -9,6 +9,26 @@ blogRouter.get('/', (request, response) => {
       response.json(blogs)
     })
 })
+
+blogRouter.delete('/:id', (request, response) => {
+  Blog
+    .findByIdAndDelete(request.params.id)
+      .then(() => response.status(204).end())
+})
+
+blogRouter.put('/:id', (request, response) => {
+  const id = request.params.id
+  const blogPost = {
+    title: request.body.title,
+    author: request.body.author,
+    url: request.body.url,
+    likes: request.body.likes,
+  }
+  Blog.findByIdAndUpdate(id, blogPost, { new: true })
+    .then(updatedBlogPost => {
+      response.json(updatedBlogPost)
+    })
+})
   
 blogRouter.post('/', (request, response) => {
   const blog = new Blog(request.body)
